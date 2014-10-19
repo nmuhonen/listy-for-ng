@@ -1,0 +1,76 @@
+constuctor:
+	listy(array or listy or iteratorFactory)
+
+
+listy methods
+
+	.filter(filter,map) => listy
+	.filterFirst(filter,map) => var
+	.filterLast(filter,map) => var
+	.first(map) => var
+	.last(map) => var
+	.map(map) => listy
+	.length(filter) => int
+	.reduce([filter,]reduce) => var
+	.every(filter) => boolean
+	.any(filter) => boolean
+	.sort(compare,[filter,]map) => listy
+	.slice(int as index, int as count, [filter,] map) => listy
+	.skip(int as count, [filter,] map) => listy
+	.take(int as count, [filter,] map) => listy
+	.groupBy([filter,]map for key,map for group items) => listy
+
+	.toArray([filter,]map) => array
+	.toHash([filter,]map for key,map for value) => hash function
+	.toLazyHash([filter,]map for key,map for value) => hash function
+	.toGroupArray([filter,]map for key,map for group items) => array of group
+
+
+parameter types
+
+	filter =
+
+		function(item,index){
+			//returns boolean on whether to include
+		})
+
+		"angular expression" where $item = item selected, $index = current index and root context = item selected
+		["angular expression",param] where $item = item selected, $index = current index, $param = param and root context = item selected
+
+	map =
+
+		function(item,index){
+			//returns projected value
+		})
+		"angular expresion" where $item = item selected, $index = current index and root context = item selected
+		["angular expression",param] where $item = item selected, $index = current index, $param = param and root context = item selected
+
+
+	compare =
+		"{exp} (desc|asc) (with {comparision expression}?(, {compareString})*" where $item = item selected, $compare = compare operation  and root context = item selected
+		function(item,compared){ returns 1 0 or -1 }
+
+		compareItem =
+			[function(item,compared),"asc| desc"]
+			["{exp} (desc|asc) (with {comparision expression}?(, {compareString})*", param, compareOperationBase] where $item = item selected, $compare = compare operation, $param = param, and root context = item selected
+		[{compareItem}*]
+
+    keySelect =
+		"{key exp} on (desc|asc)? (with {comparision expression})?" where $item = item selected, $compare = compare operation  and root context = item selected
+		function(item){}
+		[function(item){},"asc" | "desc"]
+		[function(item){},function(item,compare),"asc" | "desc"]
+		[function(item){},function(item), function(item,compare),"asc" | "desc"]
+        ["{key exp} (desc|asc)? (matching {compare value exp})? (with {comparision expression})?",param,compare]
+
+	groupMap = 
+		"angular expression" where $key = group key, $items = group items, $index = current group index and root context = item selected 
+		["angular expression",param] where $key = group key, $items = group items, $index = current group index, $param = param and root context = item selected 
+
+	reduce = 
+		function(result,current,index)
+		[function(result,current,index),param,init]
+		"angular expression" where $result = result, $current = current item in array, $index = index and root context = $result
+        ["angular expression",init] where
+
+    {key,value}
