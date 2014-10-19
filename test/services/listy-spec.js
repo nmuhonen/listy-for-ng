@@ -814,5 +814,287 @@ describe("listy service",function() {
             ]);
         });
 
+        it("should do a sort with a group of sorters with a comparitor param property an expression on an array of objects",function() {
+            function ageCompare(item, compare) {
+                item = item.age;
+                compare = compare.age;
+
+                return item === compare ? 0
+                    : item === null ? 1
+                    : compare === null ? -1
+                    : item > compare ? 1
+                    : -1;
+            }
+
+            function hairCompare(item, compare) {
+                item = item.hairColor;
+                compare = compare.hairColor;
+
+                return item === compare ? 0
+                    : item === null ? 1
+                    : compare === null ? -1
+                    : item.localeCompare(compare);
+            }
+
+            function getState(item){
+                return item.state;
+            }
+
+            var listee = listy([
+                {state: "MD", hairColor: "brown", age: 2},
+                {state: "CA", hairColor: "brown", age: 6},
+                {state: "MD", hairColor: "red", age: 3},
+                {state: "MD", hairColor: "brown", age: 4},
+                {state: "MD", hairColor: "brown", age: 1}
+            ]);
+
+            var result = listee.sort(
+                ["getState($item), $item desc with hairCompare",{hairCompare:hairCompare,getState:getState}],
+                [ageCompare,"desc"]
+            );
+
+            expect(result()).toEqual([
+                {state: "CA", hairColor: "brown", age: 6},
+                {state: "MD", hairColor: "red", age: 3},
+                {state: "MD", hairColor: "brown", age: 4},
+                {state: "MD", hairColor: "brown", age: 2},
+                {state: "MD", hairColor: "brown", age: 1}
+            ]);
+
+            listee = listy([
+                {state: "MD", hairColor: "brown", age: 2},
+                {state: "CA", hairColor: "brown", age: 6},
+                {state: "MD", hairColor: "red", age: 3},
+                {state: "MD", hairColor: "brown", age: 4},
+                {state: "MD", hairColor: "brown", age: 1}
+            ]);
+
+            result = listee.sort(
+                ["getState($item) asc",{getState:getState}],
+                ["$item desc with hairCompare",{hairCompare:hairCompare}],
+                [ageCompare,"desc"]
+            );
+
+            expect(result()).toEqual([
+                {state: "CA", hairColor: "brown", age: 6},
+                {state: "MD", hairColor: "red", age: 3},
+                {state: "MD", hairColor: "brown", age: 4},
+                {state: "MD", hairColor: "brown", age: 2},
+                {state: "MD", hairColor: "brown", age: 1}
+            ]);
+        });
+    });
+
+
+    describe("method some(filter,param?)", function(){
+        it("should notify on a simple array for one match filtered by a closure",function(){
+            function matcher(item){
+                return item > 3;
+            }
+
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.some(matcher);
+
+            expect(result).toBe(true);
+
+            listee = listy([1,2,1,0]);
+            result = listee.some(matcher);
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a array of objects for one match filtered by a closure",function(){
+            function matcher(item){
+                return item.value > 3;
+            }
+
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.some(matcher);
+
+            expect(result).toBe(true);
+
+            listee = listy([1,2,1,0]);
+            result = listee.some(matcher);
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a simple array for one match filtered by an expression",function(){
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.some("$item > 3");
+
+            expect(result).toBe(true);
+
+            listee = listy([1,2,1,0]);
+            result = listee.some("$item > 3");
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a simple array for one match filtered by an expression and a parameter",function(){
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.some("$item > $param",3);
+
+            expect(result).toBe(true);
+
+            listee = listy([1,2,1,0]);
+            result = listee.some("$item > $param",3);
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a simple array for one match filtered by an expression and a parameter property",function(){
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.some("$item > val",{val:3});
+
+            expect(result).toBe(true);
+
+            listee = listy([1,2,1,0]);
+            result = listee.some("$item > val",{val:3});
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a array of objects for one match filtered by an expression",function(){
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.some("value > 3");
+
+            expect(result).toBe(true);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.some("value > 3");
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a array of objects for one match filtered by an expression and a parameter",function(){
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.some("value > $param",3);
+
+            expect(result).toBe(true);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.some("value > $param",3);
+
+            expect(result).toBe(false);
+        });
+
+        it("should notify on a array of objects for one match filtered by an expression and a parameter property",function(){
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.some("value > val",{val:3});
+
+            expect(result).toBe(true);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.some("value > val",{val:3});
+
+            expect(result).toBe(false);
+        });
+    });
+
+    describe("method every(filter,param?)", function(){
+        it("should notify on a simple array for one match filtered by a closure",function(){
+            function matcher(item){
+                return item <= 3;
+            }
+
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.every(matcher);
+
+            expect(result).toBe(false);
+
+            listee = listy([1,2,1,0]);
+            result = listee.every(matcher);
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a array of objects for one match filtered by a closure",function(){
+            function matcher(item){
+                return item.value <= 3;
+            }
+
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.every(matcher);
+
+            expect(result).toBe(false);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.every(matcher);
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a simple array for one match filtered by an expression",function(){
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.every("$item <= 3");
+
+            expect(result).toBe(false);
+
+            listee = listy([1,2,1,0]);
+            result = listee.every("$item <= 3");
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a simple array for one match filtered by an expression and a parameter",function(){
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.every("$item <= $param",3);
+
+            expect(result).toBe(false);
+
+            listee = listy([1,2,1,0]);
+            result = listee.every("$item <= $param",3);
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a simple array for one match filtered by an expression and a parameter property",function(){
+            var listee = listy([1,4,5,3,1,7,2]);
+            var result = listee.every("$item <= val",{val:3});
+
+            expect(result).toBe(false);
+
+            listee = listy([1,2,1,0]);
+            result = listee.every("$item <= val",{val:3});
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a array of objects for one match filtered by an expression",function(){
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.every("value <= 3");
+
+            expect(result).toBe(false);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.every("value <= 3");
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a array of objects for one match filtered by an expression and a parameter",function(){
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.every("value <= $param",3);
+
+            expect(result).toBe(false);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.every("value <= $param",3);
+
+            expect(result).toBe(true);
+        });
+
+        it("should notify on a array of objects for one match filtered by an expression and a parameter property",function(){
+            var listee = listy([{value:1},{value:4},{value:5},{value:3},{value:1},{value:7},{value:2}]);
+            var result = listee.every("value <= val",{val:3});
+
+            expect(result).toBe(false);
+
+            listee = listy([{value:1},{value:2},{value:1},{value:0}]);
+            result = listee.every("value <= val",{val:3});
+
+            expect(result).toBe(true);
+        });
     });
 });

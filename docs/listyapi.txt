@@ -4,26 +4,26 @@ constuctor:
 
 listy methods
 
-	.filter(filter,map) => listy
-	.filterFirst(filter,map) => var
-	.filterLast(filter,map) => var
-	.first(map) => var
-	.last(map) => var
+	.filter(filter) => listy
+	.first() => var
+	.last() => var
 	.map(map) => listy
-	.length(filter) => int
-	.reduce([filter,]reduce) => var
-	.every(filter) => boolean
-	.any(filter) => boolean
-	.sort(compare,[filter,]map) => listy
-	.slice(int as index, int as count, [filter,] map) => listy
-	.skip(int as count, [filter,] map) => listy
-	.take(int as count, [filter,] map) => listy
-	.groupBy([filter,]map for key,map for group items) => listy
+	.length() => int
+	.reduce(reduce,init?,param?) => var
+    .every(filter) => boolean
+	.some(filter) => boolean
+	.sort((compare?,param?) || sortgroup...) => listy
+	.slice(int as index, int as count) => listy
+	.skip(int as count) => listy
+	.take(int as count) => listy
+	.groupBy(grouping,param?) => listy
+	.unique(distinctSelector,param?) => listy
 
-	.toArray([filter,]map) => array
-	.toHash([filter,]map for key,map for value) => hash function
-	.toLazyHash([filter,]map for key,map for value) => hash function
-	.toGroupArray([filter,]map for key,map for group items) => array of group
+	.toArray(map?) => array
+	.toHash(map for key,map for value) => hash function
+	.toLazyHash(map for key,map for value) => hash function
+	.toGroupArray(map for key,map? for group items) => array of group
+	.toUniqueSet(distinctSelector, map?) => array of group
 
 
 parameter types

@@ -129,10 +129,10 @@
                 return result;
             }
 
-            function some(condition){
+            function some(condition,param){
                 var filterOp, innerFactory, iter;
 
-                filterOp = lc.getFilter(condition);
+                filterOp = lc.getFilter(lc.argsArray(arguments));
 
                 innerFactory = filterOp ? lc.childIterFactory(iteratorFactory,{
                     filterOp: filterOp
@@ -143,10 +143,10 @@
                 return iter.next();
             }
 
-            function everyFn(condition){
+            function everyFn(condition,param){
                 var filterOp, iter;
 
-                filterOp = lc.getFilter(condition);
+                filterOp = lc.getFilter(lc.argsArray(arguments));
 
                 iter = iteratorFactory();
 
