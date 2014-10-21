@@ -404,6 +404,25 @@ describe("listy service",function() {
                 {index: 2, item: "Nancy Riley", isOddIndex: false},
             ]);
         });
+
+        it("should project from a array using an expression with $extend and a parameter",function(){
+            function isOdd(num){
+                return num % 2 == 1;
+            }
+
+            var listee = listy([
+                {first: "Nick", last: "Muhonen"},
+                {first: "John", last: "Doe"},
+                {first: "Nancy", last: "Riley"},
+            ]);
+            var result = listee.map("$extend({isOddIndex: isOdd($index)})",{isOdd:isOdd});
+
+            expect(result()).toEqual([
+                {first: "Nick", last: "Muhonen", isOddIndex: false},
+                {first: "John", last: "Doe", isOddIndex: true},
+                {first: "Nancy", last: "Riley", isOddIndex: false},
+            ]);
+        });
     });
 
     describe("method reduce(reduceOp,init?,param?)", function(){

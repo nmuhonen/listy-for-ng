@@ -483,6 +483,12 @@
         function getParsedExpression(args){
             var parsedExpression,locals,expression,param;
 
+            function extend(value){
+                return angular.extend({},locals.$item,value);
+            }
+
+
+
             function evaluate(value,index){
                 var result;
 
@@ -514,6 +520,7 @@
             locals.$param = param;
             locals.$index = undefined;
             locals.$item = undefined;
+            locals.$extend = extend;
 
             return evaluate;
         }
