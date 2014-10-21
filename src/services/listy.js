@@ -74,11 +74,13 @@
                 return listee.toArray();
             }
 
-            function toArray(){
+            function toArray(map){
                 var result, iter;
 
                 result = [];
-                iter = iteratorFactory();
+                iter = map ? lc.childIterFactory(iteratorFactory, {
+                    projectOp: lc.getMap(lc.argsArray(arguments))
+                })() : iteratorFactory();
                 while(iter.next()){
                     result.push(iter.value());
                 }

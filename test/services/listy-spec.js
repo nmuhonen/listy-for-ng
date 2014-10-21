@@ -1318,5 +1318,120 @@ describe("listy service",function() {
                 }
             ]);
         });
+
+        it("should group on an array with a key and key projection expression, limiting number of groups as well as projecting the group items with a closure",function(){
+            function groupOp(group){
+                return group.map("person");
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).groupBy("location as {location:location, index:$index} limit 1",groupOp)("{location:key, people:group()}");
+            expect(result).toEqual([
+                {
+                    location: {index:0, location:"Oregon"},
+                    people: ["Archibald","Natalie","Isabel"]
+                }
+            ]);
+        });
+
+        it("should group on an array with a key and key projection expression, limiting number of groups as well as projecting the group items with an expression",function(){
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).groupBy("location as {location:location, index:$index} limit 1","person")("{location:key, people:group()}");
+            expect(result).toEqual([
+                {
+                    location: {index:0, location:"Oregon"},
+                    people: ["Archibald","Natalie","Isabel"]
+                }
+            ]);
+        });
+
+
+        it("should group on an array with a key and key projection expression, limiting number of groups as well as projecting the group items with an expression and a parameter",function(){
+            function same(item){
+                return item;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).groupBy("$param(location) as {location:location, index:$param($index)} limit 1","$param(person)",same)("{location:key, people:group()}");
+            expect(result).toEqual([
+                {
+                    location: {index:0, location:"Oregon"},
+                    people: ["Archibald","Natalie","Isabel"]
+                }
+            ]);
+        });
+
+        it("should group on an array with a key and key projection expression, limiting number of groups as well as projecting the group items with an expression and a parameter property",function(){
+            function same(item){
+                return item;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source)
+                .groupBy("same(location) as {location:location, index:same($index)} limit same(1)","same(person)",{same: same})
+                .toArray("{location:key, people:group()}");
+            expect(result).toEqual([
+                {
+                    location: {index:0, location:"Oregon"},
+                    people: ["Archibald","Natalie","Isabel"]
+                }
+            ]);
+        });
+
+        it("should group on an array with a key and key projection parameterized expression, limiting number of groups as well as projecting the group items with a closure and a parameter property",function() {
+            function groupOp(group){
+                return group.map("person");
+            }
+
+            function same(item) {
+                return item;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source)
+                .groupBy(["same(location) as {location:location, index:same($index)} limit same(1)", {same: same}], groupOp)
+                .toArray("{location:key, people:group()}");
+            expect(result).toEqual([
+                {
+                    location: {index: 0, location: "Oregon"},
+                    people: ["Archibald", "Natalie", "Isabel"]
+                }
+            ]);
+        });
     });
 });
