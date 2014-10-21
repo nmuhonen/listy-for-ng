@@ -487,8 +487,6 @@
                 return angular.extend({},locals.$item,value);
             }
 
-
-
             function evaluate(value,index){
                 var result;
 
@@ -606,8 +604,125 @@
             }
         }
 
+
+        function parseKeyExpression(expression){
+            var match, keyMatch, projectMatch, limitMatch;
+
+            keyMatch = 1;
+            projectMatch = 2;
+            limitMatch = 3;
+
+            groupKeyRegEx.lastIndex = 0;
+
+            match = groupKeyRegEx.exec(expression);
+            return {
+                mapExpression: match[keyMatch],
+                projectionExpression: match[projectMatch],
+                limitExpression: match[limitMatch]
+            }
+        }
+
+        function getLimitFromExpression(expression,param){
+            var map,locals,prop;
+
+            map = $parse(expression);
+
+            locals = {};
+
+            for(prop in param){
+                if (!param.hasOwnProperty(prop)){
+                    continue;
+                }
+
+                locals[prop] = param[prop];
+            }
+
+            locals.$param = param;
+
+            return map(locals);
+        }
+
+
+        function getKeyExpression(args) {
+            var expression, param, parsedValues;
+
+            expression = args[0];
+            param = args[1];
+            parsedValues = parseKeyExpression(expression);
+
+            return {
+                map: parsedValues.mapExpression !== undefined ? getExpression([parsedValues.mapExpression,param]) : undefined,
+                projection: parsedValues.projectionExpression !== undefined ? getExpression([parsedValues.projectionExpression,param]) : undefined,
+                limitSize: parsedValues.limitExpression !== undefined ? getLimitFromExpression(parsedValues.limitExpression,param) : undefined
+            };
+        }
+
+        function getGroupKey(key,param){
+            var p1;
+
+            if (angular.isString(key)){
+                return getKeyExpression([key,param]);
+            }
+            if (angular.isFunction(key)) {
+                return {
+                    map: key,
+                    projection: undefined,
+                    limitSize: undefined
+                };
+            }
+            if (angular.isArray(key)){
+                p1 = key[0];
+                if (angular.isString(p1)){
+                    return getKeyExpression(key);
+                }
+                if (angular.isFunction(p1)){
+                    return {
+                        map: key[0],
+                        projection: key[1],
+                        limitSize: key[2]
+                    };
+                }
+            }
+            return {};
+        }
+
+        function getGroupOp(args){
+            function groupMap(group){
+                return group.map(map);
+            }
+
+            var p1,map;
+
+            p1 = args[0];
+
+            if (angular.isString(p1)){
+                map = getParsedExpression(args);
+                return groupMap;
+            }
+            if (angular.isFunction(p1)){
+                return p1;
+            }
+            return undefined;
+        }
+
+        function getGrouper(args){
+
+            var keyOut;
+
+            keyOut = getGroupKey(args[0],args[2]);
+
+
+            return {
+                keyMap: keyOut.map,
+                keyProjection: keyOut.projection,
+                keyLimitSize: keyOut.limitSize,
+                groupOp: getGroupOp([args[1],args[2]])
+            }
+
+        }
+
         sorterRegEx = /\s*([\s\S]+?)(?:\s+(?:(?:asc)|(desc)))?(?:\s+with\s+([\s\S]+?))?(?:\s*(?:,|($)))/g;
-        groupKeyRegEx = /\s*([\s\S]+?)(\s+(?:(?:asc)|(desc)))?(?:\s+with\s+([\s\S]+?))?(?:\s+as\s+([\s\S]+?))?\s*$/g;
+        groupKeyRegEx = /\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+limit\s+([\s\S]+?))?\s*$/g;
 
         return {
             arrayIterFactory: arrayIterFactory,
@@ -617,6 +732,7 @@
             getMap: getMap,
             getReduce: getReduce,
             getSorter: getSorter,
+            getGrouper: getGrouper,
             argsArray: argsArray,
 
             //for testing

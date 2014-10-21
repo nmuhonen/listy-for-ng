@@ -275,6 +275,66 @@
 
             }
 
+            function groupBy(key,group,param){
+                var grouper;
+
+                function configFn(){
+                    var keys, key, keyHash;
+
+                    function hashVal(item){
+                        return item === undefined ? "undefined"
+                            : item === null ? "null"
+                            : "val:" + String(item);
+                    }
+
+                    function filterOp(item,index){
+                        key = grouper.keyMap ? grouper.keyMap(item,index) : item;
+                        keyHash = hashVal(key);
+                        if (keys[keyHash]){
+                            return false;
+                        }
+                        keys[keyHash] = true;
+                        return true;
+                    }
+
+                    function breakOp(item,index){
+                        return index >= grouper.keyLimitSize;
+                    }
+
+                    function projectOp(item,index){
+                        function groupFilter(item){
+                            var itemKey = grouper.keyMap ? grouper.keyMap(item,index) : item;
+                            return hashVal(itemKey) === keyHash;
+                        }
+
+                        var groupList =
+                            listy(iteratorFactory).filter(groupFilter);
+
+                        if (grouper.groupOp){
+                            groupList = grouper.groupOp(groupList);
+                        }
+
+                        return {
+                            key: grouper.keyProjection ? grouper.keyProjection(item,index) : key,
+                            group: groupList
+                        };
+                    }
+
+                    keys = [];
+
+                    return {
+                        filterOp: filterOp,
+                        breakOp: grouper.keyLimitSize !== undefined ? breakOp : undefined,
+                        projectOp: projectOp
+                    };
+                }
+
+                grouper = lc.getGrouper(lc.argsArray(arguments));
+
+                return listyFromParent(iteratorFactory,configFn)
+
+            }
+
             service = self;
             extend(service,{
                 $typeId: typeId,
@@ -290,7 +350,8 @@
                 first: first,
                 last: last,
                 concat: concat,
-                sort: sort
+                sort: sort,
+                groupBy: groupBy
             });
 
             return service;
