@@ -706,11 +706,9 @@
         }
 
         function getGrouper(args){
-
             var keyOut;
 
             keyOut = getGroupKey(args[0],args[2]);
-
 
             return {
                 keyMap: keyOut.map,
@@ -718,8 +716,31 @@
                 keyLimitSize: keyOut.limitSize,
                 groupOp: getGroupOp([args[1],args[2]])
             }
-
         }
+
+        function getArrayGrouper(args){
+            var keyMap, groupItemMap, groupMap, param, keyOut;
+
+            keyMap = args[0];
+            groupItemMap = args[1];
+            groupMap = args[2];
+            param = args[3];
+
+            groupItemMap = angular.isArray(groupItemMap) ? groupItemMap : [groupItemMap,param];
+            groupMap = angular.isArray(groupMap) ? groupMap : [groupMap,param];
+
+
+            keyOut = getGroupKey(keyMap,param);
+
+            return {
+                keyMap: keyOut.map,
+                keyProjection: keyOut.projection,
+                keyLimitSize: keyOut.limitSize,
+                groupItemMap: getMap(groupItemMap),
+                groupMap: getMap(groupMap)
+            }
+        }
+
 
         sorterRegEx = /\s*([\s\S]+?)(?:\s+(?:(?:asc)|(desc)))?(?:\s+with\s+([\s\S]+?))?(?:\s*(?:,|($)))/g;
         groupKeyRegEx = /\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+limit\s+([\s\S]+?))?\s*$/g;
@@ -733,6 +754,7 @@
             getReduce: getReduce,
             getSorter: getSorter,
             getGrouper: getGrouper,
+            getArrayGrouper: getArrayGrouper,
             argsArray: argsArray,
 
             //for testing

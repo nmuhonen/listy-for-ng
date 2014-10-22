@@ -277,17 +277,17 @@
 
             }
 
+            function hashVal(item){
+                return item === undefined ? "undefined"
+                    : item === null ? "null"
+                    : "val:" + String(item);
+            }
+
             function groupBy(key,group,param){
                 var grouper;
 
                 function configFn(){
                     var keys, key, keyHash;
-
-                    function hashVal(item){
-                        return item === undefined ? "undefined"
-                            : item === null ? "null"
-                            : "val:" + String(item);
-                    }
 
                     function filterOp(item,index){
                         key = grouper.keyMap ? grouper.keyMap(item,index) : item;
@@ -337,12 +337,59 @@
 
             }
 
+            function toGroupArray(keyOp,groupItemMap,groupMap,param){
+                var grouper,item,hash,key,groupings,group,keyHash,iter,groupIndex,currentGroupIndex;
+
+                grouper = lc.getArrayGrouper(lc.argsArray(arguments));
+
+                iter = iteratorFactory();
+                groupings = [];
+                hash = {};
+                currentGroupIndex = 0;
+
+                while (iter.next()){
+                    item = iter.value();
+                    key = grouper.keyMap ? grouper.keyMap(item,iter.index()) : item;
+                    keyHash = hashVal(key);
+                    groupIndex = hash[keyHash];
+                    if (groupIndex === undefined && grouper.keyLimitSize !== undefined && currentGroupIndex === grouper.keyLimitSize){
+                        continue;
+                    }
+
+                    if (groupIndex === undefined){
+                        groupIndex = currentGroupIndex++;
+                        hash[keyHash] = groupIndex;
+                        group = groupings[groupIndex] = {
+                            key: grouper.keyProjection ? grouper.keyProjection(item,groupIndex) : key,
+                            group: []
+                        };
+                    }
+                    else{
+                        group = groupings[groupIndex];
+                    }
+
+                    group.group.push(grouper.groupItemMap ? grouper.groupItemMap(item,group.group.length) : item);
+                }
+
+                currentGroupIndex = 0;
+                if (grouper.groupMap){
+                    for(currentGroupIndex === 0; currentGroupIndex < groupings.length; currentGroupIndex++){
+                        group = groupings[currentGroupIndex];
+                        groupings[currentGroupIndex] = grouper.groupMap(group,currentGroupIndex);
+                    }
+                }
+
+                return groupings;
+            }
+
             service = self;
             extend(service,{
                 $typeId: typeId,
                 createIterator: createIterator,
 
                 toArray: toArray,
+                toGroupArray: toGroupArray,
+
                 count: count,
                 filter: filter,
                 map: map,
@@ -354,6 +401,7 @@
                 concat: concat,
                 sort: sort,
                 groupBy: groupBy
+
             });
 
             return service;
@@ -405,7 +453,6 @@
             var iteratorFactory = lc.childIterFactory(innerIterator,config);
             return listy(iteratorFactory);
         }
-
 
         function listy(source){
             var isArray,iterator,service;

@@ -1118,7 +1118,7 @@ describe("listy service",function() {
     });
 
 
-    ddescribe("method groupBy(key,grouping?,param?)",function(){
+    describe("method groupBy(key,grouping?,param?)",function(){
         it("should group on a simple array",function(){
             var result = listy([1,2,4,2,1,5]).groupBy()("key");
 
