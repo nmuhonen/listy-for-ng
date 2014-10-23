@@ -51,27 +51,8 @@
         function createBaseService(iteratorFactory){
             var service;
 
-            function self(filter,map,sort){
-                var listee = service;
-
-                if (arguments.length === 1){
-                    map = filter;
-                    filter = undefined;
-                }
-
-                if (filter){
-                    listee = listee.filter(filter);
-                }
-
-                if (map){
-                    listee = listee.map(map);
-                }
-
-                if (sort){
-                    listee = listee.sort(sort);
-                }
-                
-                return listee.toArray();
+            function self(map){
+                return service.toArray(arguments[0],arguments[1]);
             }
 
             function toArray(map){
