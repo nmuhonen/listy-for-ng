@@ -18,7 +18,7 @@ describe("listy service",function() {
             beforeEach(function () {
                 module('listyMod');
                 inject(function ($injector) {
-                    listyComponents = $injector.get("listyComponents");
+                    listyComponents = $injector.get("listyComponents")();
                 })
             });
 

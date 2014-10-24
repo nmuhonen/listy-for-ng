@@ -1,47 +1,10 @@
 describe("listy service",function() {
-    var listy, listyComponents;
-
-    function expectMany(source) {
-        var choices = source.withChoices;
-        var sourceData = source.withSource;
-        var toEqual = source.toEqual;
-        var evaluate = source.whenEvaluating;
-        var choiceStack = Object.getOwnPropertyNames(choices);
-        var p = {};
-
-        function evaluteOptions(stack) {
-            function eval(tester) {
-                expect(tester(sourceData, p)).toEqual(toEqual);
-            }
-
-            if (stack.length === 0) {
-                if (angular.isArray(evaluate)) {
-                    evaluate.forEach(eval);
-                }
-                else {
-                    eval(evaluate);
-                }
-                return;
-            }
-
-            var newStack = stack.slice();
-            var choice = newStack.pop();
-            var choiceOptions = choices[choice];
-
-            choiceOptions.forEach(function (choiceOption) {
-                p[choice] = choiceOption;
-                evaluteOptions(newStack);
-            })
-        }
-
-        evaluteOptions(choiceStack);
-    }
+    var listy;
 
     beforeEach(function () {
         module('listyMod');
         inject(function ($injector) {
             listy = $injector.get("listy");
-            listyComponents = $injector.get("listyComponents");
         })
     });
 
@@ -2462,6 +2425,82 @@ describe("listy service",function() {
                 {val: 3, index:2},
                 {val: 4},
                 {val: 2}
+            ]);
+        });
+    });
+
+    describe("method let(params)",function(){
+        it("should set let params",function(){
+            function getLocation(item){
+                return item.location
+            }
+
+            function getPerson(item){
+                return item.person
+            }
+
+
+            var source = [
+                {locationId: 1, location: "Oregon", person: "Archibald"},
+                {locationId: 1, location: "Oregon", person: "Natalie"},
+                {locationId: 2, location: "Seattle", person: "Jake"},
+                {locationId: 1, location: "Oregon", person: "Isabel"},
+                {locationId: 2, location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source,{locationOf:getLocation,personOf:getPerson})
+                .sort("locationOf($item) desc, person")
+                .groupBy("locationId as locationOf($item)","personOf($item)")
+                .toArray("{location: key, people: group()}");
+
+            expect(result).toEqual([
+                {
+                    location: "Seattle",
+                    people: ["Jake","John"]
+                },
+                {
+                    location: "Oregon",
+                    people: ["Archibald","Isabel","Natalie"]
+                }
+            ]);
+        });
+
+        it("should override let params",function(){
+            function getLocation(item){
+                return item.location
+            }
+
+            function getKeyLocation(item){
+                return item.locationId + ":" + item.location;
+            }
+
+            function getPerson(item){
+                return item.person
+            }
+
+            var source = [
+                {locationId: 2, location: "Oregon", person: "Archibald"},
+                {locationId: 2, location: "Oregon", person: "Natalie"},
+                {locationId: 1, location: "Seattle", person: "Jake"},
+                {locationId: 2, location: "Oregon", person: "Isabel"},
+                {locationId: 1, location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source,{locationOf:getLocation, personOf:getPerson})
+                .sort("locationOf($item) desc, person")
+                .let({locationOf:getKeyLocation})
+                .groupBy("locationId as locationOf($item)","personOf($item)")
+                .toArray("{location: key, people: group()}");
+
+            expect(result).toEqual([
+                {
+                    location: "1:Seattle",
+                    people: ["Jake","John"]
+                },
+                {
+                    location: "2:Oregon",
+                    people: ["Archibald","Isabel","Natalie"]
+                }
             ]);
         });
     });

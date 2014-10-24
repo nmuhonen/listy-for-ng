@@ -5,7 +5,7 @@
 
     listyFactory.$inject = ["listyComponents"];
 
-    function listyFactory(lc){
+    function listyFactory(listyComponents){
         function typeId(){
             return {
                 typeId: "listy"
@@ -17,14 +17,6 @@
                 source[name] = target[name];
             });
         }
-
-        function shallowCopy(source){
-            var target = {};
-
-            extend(target,source);
-            return target;
-        }
-
 
         function createForEachCtx(){
             var hostCtx, subCtx;
@@ -48,7 +40,7 @@
         }
 
 
-        function createBaseService(iteratorFactory){
+        function createBaseService(iteratorFactory,lc){
             var service;
 
             function self(map){
@@ -75,7 +67,7 @@
 
                 return listyFromParent(iteratorFactory,{
                     filterOp: filterOp
-                })
+                },lc)
             }
 
             function map(map,param){
@@ -85,7 +77,7 @@
 
                 return listyFromParent(iteratorFactory,{
                     projectOp: mapOp
-                });
+                },lc);
             }
 
             function reduce(reduceFn,args,first){
@@ -204,16 +196,16 @@
 
                 sortOp = lc.getSorter(lc.argsArray(arguments));
 
-                return listy(createSortIterator);
+                return listyFact(createSortIterator,lc);
             }
 
             function concat(source){
                 var sourceListy, newIterator;
 
-                sourceListy = listy(source);
+                sourceListy = listyFact(source,lc);
 
                 newIterator = lc.concatIterFactory(iteratorFactory,sourceListy.createIterator);
-                return listy(newIterator);
+                return listyFact(newIterator,lc);
 
             }
 
@@ -250,7 +242,7 @@
                         }
 
                         var groupList =
-                            listy(iteratorFactory).filter(groupFilter);
+                            listyFact(iteratorFactory,lc).filter(groupFilter);
 
                         if (grouper.groupOp){
                             groupList = grouper.groupOp(groupList);
@@ -273,8 +265,12 @@
 
                 grouper = lc.getGrouper(lc.argsArray(arguments));
 
-                return listyFromParent(iteratorFactory,configFn)
+                return listyFromParent(iteratorFactory,configFn,lc)
 
+            }
+
+            function letFn(params){
+                return listyFact(iteratorFactory,lc.child(params));
             }
 
             function unique(keyOp,param){
@@ -314,7 +310,7 @@
 
                 uniqueOps = lc.getUnique(lc.argsArray(arguments));
 
-                return listyFromParent(iteratorFactory,childIterFactory);
+                return listyFromParent(iteratorFactory,childIterFactory,lc);
             }
 
             function uniqueSet(keyOp,param){
@@ -358,7 +354,7 @@
 
                 uniqueOps = lc.getUnique(lc.argsArray(arguments));
 
-                return listyFromParent(iteratorFactory,childIterFactory);
+                return listyFromParent(iteratorFactory,childIterFactory,lc);
             }
 
 
@@ -422,7 +418,7 @@
 
                 return listyFromParent(iteratorFactory,{
                     filterOp: skipFilter
-                });
+                },lc);
             }
 
             function take(amount){
@@ -432,7 +428,7 @@
 
                 return listyFromParent(iteratorFactory,{
                     breakOp: takeBreak
-                });
+                },lc);
             }
 
             function forEach(action){
@@ -524,13 +520,14 @@
                 uniqueSet: uniqueSet,
                 skip: skip,
                 take: take,
-                forEach: forEach
+                forEach: forEach,
+                let: letFn
             });
 
             return service;
         }
 
-        function extendWithArrayFunctions(service,array){
+        function extendWithArrayFunctions(service,array,lc){
 
             function toArray(map,params){
                 var mapOp, resultArray;
@@ -572,12 +569,12 @@
             });
         }
 
-        function listyFromParent(innerIterator,config){
+        function listyFromParent(innerIterator,config,lc){
             var iteratorFactory = lc.childIterFactory(innerIterator,config);
-            return listy(iteratorFactory);
+            return listyFact(iteratorFactory,lc);
         }
 
-        function listy(source){
+        function listyFact(source,lc){
             var isArray,iterator,service;
 
             if (source.$typeId && source.$typeId === typeId){
@@ -588,15 +585,18 @@
             iterator = isArray ? lc.arrayIterFactory(source) : source;
 
 
-            service = createBaseService(iterator);
+            service = createBaseService(iterator,lc);
             if (isArray){
-                extendWithArrayFunctions(service,source);
+                extendWithArrayFunctions(service,source,lc);
             }
 
             return service;
         }
 
+        function listy(source,letParams){
+            return listyFact(source,listyComponents(letParams));
+        }
+
         return listy;
     }
-
 })(angular);
