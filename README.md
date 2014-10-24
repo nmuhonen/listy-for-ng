@@ -1,7 +1,7 @@
 listy-for-ng
 ============
 
-An angular service for doing stuff with arrays.
+An angular service for doing stuff with arrays in a chainable lazy evaluated way.
 
 service listy(array | listy | listyIteratorFactory) => listy
 --------
@@ -133,9 +133,9 @@ listy(source).map("add($item,$result)",0,{add:add});
 expect(source).toEqual(3);
 ```
 
-method sort(sortExpression,...) => var
+method sort(sortExpression,...) => listy
 --------
-reduces a result set from a listy.
+sorts a result set from a listy.
 
 ```javascript
 var source = [
@@ -168,5 +168,61 @@ var result = listy(source).sort("state desc, city with strCmp, age",{strCmp: str
 var result = listy(source).sort([compareState,"desc"],["city with strCmp",{strCmp: strCmp}],["age"]);
 ```
 
+method groupBy(key,groupItem?,param?) => listy
+--------
+groups a result set from a listy.
+
+```javascript
+var source = [
+  {stateId: 1, state: "CA", city: "Bakersfield"}, 
+  {stateId: 2, state: "OR", city: "Portland"}, 
+  {stateId: 1, state: "CA", city: "San Francisco"}, 
+  {stateId: 1, state: "CA", city: "Los Angeles"}, 
+  {stateId: 2, state: "OR", city: "Eugene"}
+  {stateId: 2, state: "OR", city: "St Helens"}, 
+];
+
+function expr(item){return item.stateId + ":" + item.state;}
+
+//with an expression
+var result = listy(source).groupBy("stateId as expr($item)","city",{expr: expr});
+
+//with an expression and a grouping closure
+
+var result = listy(source).groupBy(["stateId as expr($item)",{expr: expr}],function(grp){
+  return grp.map("city");
+});
+
+expect(result("{stateKey:key,cities:group()}")).toEqual([
+  {
+    stateKey: "1:CA",
+    cities: ["Bakersfield","San Francisco","Los Angeles"]
+  },  
+  {
+    stateKey: "2:OR",
+    cities: ["Portland","Eugene","St Helens"]
+  },  
+]);
+```
+
+method unique(uniqueKey,param?) => listy
+--------
+filters to unique values based on key
+
+method uniqueSet(uniqueKey,param?) => listy
+--------
+filters to unique values based on key, resulting in the set of keys unless otherwize specified
+
+method every(filter) => boolean
+--------
+returns true if all items match the expression or closure predicate
+
+method some(filter) => boolean
+--------
+returns true if some of the items match the expression or closure predicate
+
+method toArray(map?) => array
+--------
+produces an array from the listy
 
 
