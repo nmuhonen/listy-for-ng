@@ -52,7 +52,7 @@ returns the number of elements in a listy.
 
 ```javascript
 var source = [{val:1},{val:2},{val:3}];
-var length = listy(source).length();
+var count = listy(source).count();
 
 expect(length).toBe(3);
 ```
