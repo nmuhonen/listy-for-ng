@@ -241,7 +241,7 @@ method last() => var
 --------
 retrieves the last item in a listy
 
-method let() => var
+method let(param) => var
 --------
 sets the params in a listy to be used with all subsequent expressions
 
