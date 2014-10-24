@@ -142,47 +142,6 @@
                 return true;
             }
 
-            function createSet(){
-                var hashSet;
-
-                function getKey(keyValue){
-                    if (keyValue === undefined){
-                        return "undefined";
-                    }
-
-                    if (keyValue === null){
-                        return "null";
-                    }
-
-                    if (keyValue !== keyValue){
-                        return "NaN";
-                    }
-
-                    return "=>" + String(keyValue);
-                }
-
-                function availableAndSet(keyVal){
-                    var key = getKey(keyVal);
-
-                    if (hashSet[key]){
-                        return false;
-                    }
-
-                    hashSet[key] = true;
-                    return true;
-                }
-
-                function sameKeys(key1,key2){
-                    return getKey(key1) === getKey(key2);
-                }
-
-                hashSet = {};
-                return {
-                    availableAndSet: availableAndSet,
-                    sameKeys: sameKeys
-                }
-            }
-
             function count(){
                 var iter,result;
 
@@ -318,6 +277,164 @@
 
             }
 
+            function unique(keyOp,param){
+                var uniqueOps;
+
+                function childIterFactory(){
+                    var hash;
+
+                    function filter(item,index){
+                        var key, keyHash;
+
+                        key = uniqueOps.keyMap ? uniqueOps.keyMap(item,index) : item;
+                        keyHash = hashVal(key);
+                        if (!hash[keyHash]){
+                            hash[keyHash] = true;
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    function project(item,index){
+                        return uniqueOps.keyProjection(item,index);
+                    }
+
+                    function breakOp(item,index){
+                        return index < uniqueOps.keyLimitSize;
+                    }
+
+                    hash = {};
+
+                    return {
+                        filterOp: filter,
+                        projectOp: uniqueOps.keyProjection ? project : undefined,
+                        breakOp: uniqueOps.keyLimitSize !== undefined ? breakOp : undefined
+                    };
+                }
+
+                uniqueOps = lc.getUnique(lc.argsArray(arguments));
+
+                return listyFromParent(iteratorFactory,childIterFactory);
+            }
+
+            function uniqueSet(keyOp,param){
+                var uniqueOps;
+
+                function childIterFactory(){
+                    var hash,key;
+
+                    function filter(item,index){
+                        var keyHash;
+
+                        key = uniqueOps.keyMap ? uniqueOps.keyMap(item,index) : item;
+                        keyHash = hashVal(key);
+                        if (!hash[keyHash]){
+                            hash[keyHash] = true;
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    function project_key(){
+                        return key;
+                    }
+
+                    function project_keyProjection(item,index){
+                        return uniqueOps.keyProjection(item,index);
+                    }
+
+                    function breakOp(item,index){
+                        return index < uniqueOps.keyLimitSize;
+                    }
+
+                    hash = {};
+x
+                    return {
+                        filterOp: filter,
+                        projectOp: uniqueOps.keyProjection ? project_keyProjection : project_key,
+                        breakOp: uniqueOps.keyLimitSize !== undefined ? breakOp : undefined
+                    };
+                }
+
+                uniqueOps = lc.getUnique(lc.argsArray(arguments));
+
+                return listyFromParent(iteratorFactory,childIterFactory);
+            }
+
+
+            function toHash(key,value,p){
+                function hashFn(key){
+                    var keyHash = hashVal(key);
+                    var hashItem = hash[keyHash];
+                    if (hashItem){
+                        return hashItem.val;
+                    }
+                    return undefined;
+                }
+
+                function containsKey(key){
+                    return hash[hashVal(key)] !== undefined;
+                }
+
+                function length(){
+                    return hashKeyIndex;
+                }
+
+                var keyOp = angular.isArray(key) ? lc.getMap(key) : lc.getMap([key,p]);
+                var valueOp = angular.isArray(value) ? lc.getMap(value) : lc.getMap([value,p]);
+                var iter = iteratorFactory();
+                var hash = {};
+                var index = 0;
+                var hashKeyIndex = 0;
+                var keyHash;
+                var key;
+                var value;
+                var item;
+                var result;
+
+                while(iter.next()){
+                    index = iter.index();
+                    item = iter.value();
+                    key = keyOp(item,index);
+                    keyHash = hashVal(key);
+                    value = hash[keyHash];
+
+                    if (value === undefined){
+                        value = {
+                            val: valueOp(item,hashKeyIndex++)
+                        };
+
+                        hash[keyHash] = value;
+                    }
+                }
+
+                result = hashFn;
+                result.containsKey = containsKey;
+                result.length = length;
+
+                return result;
+            }
+
+            function skip(amount){
+                function skipFilter(item,index){
+                    return index >= amount;
+                }
+
+                return listyFromParent(iteratorFactory,{
+                    filterOp: skipFilter
+                });
+            }
+
+            function take(amount){
+                function takeBreak(item,index){
+                    return index >= amount;
+                }
+
+                return listyFromParent(iteratorFactory,{
+                    breakOp: takeBreak
+                });
+            }
+
             function toGroupArray(keyOp,groupItemMap,groupMap,param){
                 var grouper,item,hash,key,groupings,group,keyHash,iter,groupIndex,currentGroupIndex;
 
@@ -370,6 +487,7 @@
 
                 toArray: toArray,
                 toGroupArray: toGroupArray,
+                toHash: toHash,
 
                 count: count,
                 filter: filter,
@@ -381,7 +499,11 @@
                 last: last,
                 concat: concat,
                 sort: sort,
-                groupBy: groupBy
+                groupBy: groupBy,
+                unique: unique,
+                uniqueSet: uniqueSet,
+                skip: skip,
+                take: take
 
             });
 

@@ -741,6 +741,12 @@
             }
         }
 
+        function getUnique(args){
+            var keyMap = getGroupKey(args,null);
+
+            return keyMap;
+        }
+
 
         sorterRegEx = /\s*([\s\S]+?)(?:\s+(?:(?:asc)|(desc)))?(?:\s+with\s+([\s\S]+?))?(?:\s*(?:,|($)))/g;
         groupKeyRegEx = /\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+limit\s+([\s\S]+?))?\s*$/g;
@@ -755,6 +761,7 @@
             getSorter: getSorter,
             getGrouper: getGrouper,
             getArrayGrouper: getArrayGrouper,
+            getUnique: getUnique,
             argsArray: argsArray,
 
             //for testing
