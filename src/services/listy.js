@@ -435,6 +435,26 @@
                 });
             }
 
+            function forEach(action){
+                var result, ctx, iter, actionOp = lc.getForEach(lc.argsArray(arguments));
+
+                if (!actionOp){
+                    return service;
+                }
+
+                ctx = lc.getForEachCtx();
+                iter = iteratorFactory();
+
+                while(iter.next()){
+                    result = actionOp(iter.value(),iter.index(),ctx.subCtx);
+                    if (result === ctx.breakValue){
+                        break;
+                    }
+                }
+
+                return service;
+            }
+
             function toGroupArray(keyOp,groupItemMap,groupMap,param){
                 var grouper,item,hash,key,groupings,group,keyHash,iter,groupIndex,currentGroupIndex;
 
@@ -503,7 +523,8 @@
                 unique: unique,
                 uniqueSet: uniqueSet,
                 skip: skip,
-                take: take
+                take: take,
+                forEach: forEach
             });
 
             return service;

@@ -751,6 +751,72 @@
             };
         }
 
+        function getForEachCtx(){
+            var breakValue = {};
+
+            return {
+                subCtx: {
+                    break: breakValue
+                },
+
+                breakValue: breakValue
+            };
+
+        }
+
+
+
+        function getForEachExpression(args){
+            var locals, param, prop, expression, parsedExpression, cnt, brk;
+
+            function action(item,index,ctx){
+                var result;
+
+                locals.$item = item;
+                locals.$index = index;
+
+                result = parsedExpression(item,locals);
+
+                if (result === brk){
+                    return ctx.break;
+                }
+
+                return result;
+            }
+
+            cnt = {};
+            brk = {};
+            locals = {};
+            expression = args[0];
+            param = args[1];
+
+            for(prop in param){
+                locals[prop] = param[prop];
+            }
+
+            locals.$param = param;
+            locals.$index = undefined;
+            locals.$item = undefined;
+            locals.$continue = cnt;
+            locals.$break = brk;
+
+            parsedExpression = $parse(expression);
+
+            return action;
+        }
+
+        function getForEach(args){
+            if (angular.isFunction(args[0])){
+                return args[0];
+            }
+
+            if (angular.isString(args[0])){
+                return getForEachExpression(args);
+            }
+
+            return undefined;
+        }
+
 
         sorterRegEx = /\s*([\s\S]+?)(?:\s+(?:(?:asc)|(desc)))?(?:\s+with\s+([\s\S]+?))?(?:\s*(?:,|($)))/g;
         groupKeyRegEx = /\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+limit\s+([\s\S]+?))?\s*$/g;
@@ -766,7 +832,12 @@
             getGrouper: getGrouper,
             getArrayGrouper: getArrayGrouper,
             getUnique: getUnique,
+            getForEach: getForEach,
+            getForEachCtx: getForEachCtx,
+
             argsArray: argsArray,
+
+
 
             //for testing
             parseSorterExpression: parseSorterExpression,

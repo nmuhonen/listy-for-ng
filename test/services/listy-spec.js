@@ -2209,7 +2209,7 @@ describe("listy service",function() {
         });
     });
 
-    describe("method toArray()",function(){
+    describe("method toArray(map?)",function(){
         it("should return an array from an array sourced listy",function(){
             var source = [1,2,3,4,5];
             var result = listy(source).toArray();
@@ -2275,7 +2275,7 @@ describe("listy service",function() {
         });
     });
 
-    describe("implicit method ()",function(){
+    describe("implicit method (map?)",function(){
         it("should return an array from an array sourced listy",function(){
             var source = [1,2,3,4,5];
             var result = listy(source)();
@@ -2339,6 +2339,130 @@ describe("listy service",function() {
             expect(result).toEqual(['1','2','3','4','5']);
             expect(source).not.toBe(result);
         });
+    });
 
+    describe("method forEach(action,param?)",function(){
+        it("should operate on a closure", function(){
+            var source = [
+                {val: 1},
+                {val: 5},
+                {val: 3},
+                {val: 4},
+                {val: 2}
+            ];
+
+            var listee = listy(source);
+
+            var result = listee.forEach(function(item,index){
+                item.index = index;
+            });
+
+            expect(result).toBe(listee);
+            expect(source).toEqual([
+                {val: 1, index:0},
+                {val: 5, index:1},
+                {val: 3, index:2},
+                {val: 4, index:3},
+                {val: 2, index:4}
+            ]);
+        });
+
+        it("should operate on a closure and break", function(){
+            var source = [
+                {val: 1},
+                {val: 5},
+                {val: 3},
+                {val: 4},
+                {val: 2}
+            ];
+
+            var listee = listy(source);
+
+            var result = listee.forEach(function(item,index,ctx){
+                if (index > 2){
+                    return ctx.break;
+                }
+
+                item.index = index;
+            });
+
+            expect(result).toBe(listee);
+            expect(source).toEqual([
+                {val: 1, index:0},
+                {val: 5, index:1},
+                {val: 3, index:2},
+                {val: 4},
+                {val: 2}
+            ]);
+        });
+
+        it("should operate on an expression", function(){
+            var source = [
+                {val: 1},
+                {val: 5},
+                {val: 3},
+                {val: 4},
+                {val: 2}
+            ];
+
+            var listee = listy(source);
+
+            var result = listee.forEach("index = $index");
+
+            expect(result).toBe(listee);
+            expect(source).toEqual([
+                {val: 1, index:0},
+                {val: 5, index:1},
+                {val: 3, index:2},
+                {val: 4, index:3},
+                {val: 2, index:4}
+            ]);
+        });
+
+        it("should operate on an expression and break", function(){
+            var source = [
+                {val: 1},
+                {val: 5},
+                {val: 3},
+                {val: 4},
+                {val: 2}
+            ];
+
+            var listee = listy(source);
+
+            var result = listee.forEach("$index > 2 ? $break : (index = $index)");
+
+            expect(result).toBe(listee);
+            expect(source).toEqual([
+                {val: 1, index:0},
+                {val: 5, index:1},
+                {val: 3, index:2},
+                {val: 4},
+                {val: 2}
+            ]);
+        });
+
+        it("should operate on a parameterized expression and break", function(){
+            var source = [
+                {val: 1},
+                {val: 5},
+                {val: 3},
+                {val: 4},
+                {val: 2}
+            ];
+
+            var listee = listy(source);
+
+            var result = listee.forEach("$index > maxIndex ? $break : (index = $index)",{maxIndex: 2});
+
+            expect(result).toBe(listee);
+            expect(source).toEqual([
+                {val: 1, index:0},
+                {val: 5, index:1},
+                {val: 3, index:2},
+                {val: 4},
+                {val: 2}
+            ]);
+        });
     });
 });
