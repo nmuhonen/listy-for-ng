@@ -213,16 +213,24 @@ method uniqueSet(uniqueKey,param?) => listy
 --------
 filters to unique values based on key, resulting in the set of keys unless otherwize specified
 
-method every(filter) => boolean
+method every(filter,param?) => boolean
 --------
 returns true if all items match the expression or closure predicate
 
-method some(filter) => boolean
+method some(filter,param?) => boolean
 --------
 returns true if some of the items match the expression or closure predicate
 
-method toArray(map?) => array
+method toArray(map?,param?) => array
 --------
 produces an array from the listy
+
+method toGroupArray(key,groupItem,groupMap,param?) => array
+--------
+produces an array of groups, with the children of the groups also an array
+
+method toHash(key,value,param?) => hash function
+--------
+produces a hash map for quick lookups based on key value pairs 
 
 
