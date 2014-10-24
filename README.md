@@ -15,7 +15,7 @@ angular.run([
     
     var listee2 = listy(listy.createIterator); // creates a listy from
     
-    var listee3 = listy(listee);
+    var listee3 = listy(listee); // pass through -> listee === listee3
   })
 ]);
 ```
