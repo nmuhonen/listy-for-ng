@@ -3,7 +3,7 @@ listy-for-ng
 
 An angular service for doing stuff with arrays.
 
-service listy(array | listy | listyIteratorFactory) => listy:
+service listy(array | listy | listyIteratorFactory) => listy
 --------
 creates a new listy object.
 
@@ -20,32 +20,40 @@ angular.run([
 ]);
 ```
 
-method forEach(actionFn,param?) => listy:
+method forEach(actionFn,param?) => listy
 --------
 iterates through a listy.
 
 ```javascript
-
 //with a closure
-var source = {val:1},{val:2},{val:3};
-var listee = listy(source);
+var source = [{val:1},{val:2},{val:3}];
 
-listee.forEach(function(item,index,ctx){
+listy(source).forEach(function(item,index,ctx){
   if (index > 1){
     return ctx.break;
   }
   item.index = index;
-})
+});
 
 expect(source).toBe({index:0,val:1},{val:2},{val:3});
 
 //with an expression
-var source = {val:1},{val:2},{val:3};
-var listee = listy(source);
+var source = [{val:1},{val:2},{val:3}];
 
-listee.forEach("$index > 1 ? $break : (index = $index)")
+listy(source).forEach("$index > 1 ? $break : (index = $index)");
 
 expect(source).toBe({index:0,val:1},{val:2},{val:3});
+```
+
+method count() => number
+--------
+returns the number of elements in a listy;
+
+```javascript
+var source = [{val:1},{val:2},{val:3}];
+var length = listy(source).length();
+
+expect(length).toBe(3);
 ```
 
 
