@@ -742,9 +742,13 @@
         }
 
         function getUnique(args){
-            var keyMap = getGroupKey(args,null);
+            var uniqueOps = getGroupKey(args,null);
 
-            return keyMap;
+            return {
+                keyMap: uniqueOps.map,
+                keyProjection: uniqueOps.projection,
+                keyLimitSize: uniqueOps.limitSize
+            };
         }
 
 

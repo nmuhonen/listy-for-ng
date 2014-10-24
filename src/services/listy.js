@@ -300,7 +300,7 @@
                     }
 
                     function breakOp(item,index){
-                        return index < uniqueOps.keyLimitSize;
+                        return index >= uniqueOps.keyLimitSize;
                     }
 
                     hash = {};
@@ -344,11 +344,11 @@
                     }
 
                     function breakOp(item,index){
-                        return index < uniqueOps.keyLimitSize;
+                        return index >= uniqueOps.keyLimitSize;
                     }
 
                     hash = {};
-x
+
                     return {
                         filterOp: filter,
                         projectOp: uniqueOps.keyProjection ? project_keyProjection : project_key,
@@ -372,11 +372,11 @@ x
                     return undefined;
                 }
 
-                function containsKey(key){
+                function contains(key){
                     return hash[hashVal(key)] !== undefined;
                 }
 
-                function length(){
+                function count(){
                     return hashKeyIndex;
                 }
 
@@ -409,8 +409,8 @@ x
                 }
 
                 result = hashFn;
-                result.containsKey = containsKey;
-                result.length = length;
+                result.contains = contains;
+                result.count = count;
 
                 return result;
             }
@@ -504,7 +504,6 @@ x
                 uniqueSet: uniqueSet,
                 skip: skip,
                 take: take
-
             });
 
             return service;

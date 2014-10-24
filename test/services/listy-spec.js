@@ -1795,4 +1795,550 @@ describe("listy service",function() {
             ]);
         });
     });
+
+    describe("method skip(amount)",function(){
+        it("should skip the amount given", function(){
+            expect(listy([1,2,3,4,5]).skip(2)()).toEqual([3,4,5]);
+        })
+    });
+
+    describe("method take(amount)",function(){
+        it("should take the amount given", function(){
+            expect(listy([1,2,3,4,5]).take(2)()).toEqual([1,2]);
+        })
+    });
+
+
+    describe("method hash(key,value,params?)",function(){
+        it ("should create a hash with a key and value closure",function(){
+            function fromId(item){
+                return item.id;
+            }
+
+            function asName(item){
+                return item.name;
+            }
+
+            var source = [
+                {id: 1, name: "Nick"},
+                {id: 2, name: "Jennifer"},
+                {id: 3, name: "Jessica"},
+            ];
+
+            var hash = listy(source).toHash(fromId,asName);
+
+            expect(hash.count()).toBe(3);
+            expect(hash(1)).toBe("Nick");
+            expect(hash.contains(1)).toBe(true);
+            expect(hash(2)).toBe("Jennifer");
+            expect(hash.contains(2)).toBe(true);
+            expect(hash(3)).toBe("Jessica");
+            expect(hash.contains(3)).toBe(true);
+            expect(hash(4)).toBe(undefined);
+            expect(hash.contains(4)).toBe(false);
+        });
+
+        it ("should create a hash with a key and value expression",function(){
+            var source = [
+                {id: 1, name: "Nick"},
+                {id: 2, name: "Jennifer"},
+                {id: 3, name: "Jessica"},
+            ];
+
+            var hash = listy(source).toHash("id","name");
+
+            expect(hash.count()).toBe(3);
+            expect(hash(1)).toBe("Nick");
+            expect(hash.contains(1)).toBe(true);
+            expect(hash(2)).toBe("Jennifer");
+            expect(hash.contains(2)).toBe(true);
+            expect(hash(3)).toBe("Jessica");
+            expect(hash.contains(3)).toBe(true);
+            expect(hash(4)).toBe(undefined);
+            expect(hash.contains(4)).toBe(false);
+        });
+
+        it ("should create a hash with a key and value expression",function(){
+            var source = [
+                {id: 1, name: "Nick"},
+                {id: 2, name: "Jennifer"},
+                {id: 3, name: "Jessica"},
+            ];
+
+            var hash = listy(source).toHash("id","name");
+
+            expect(hash.count()).toBe(3);
+            expect(hash(1)).toBe("Nick");
+            expect(hash.contains(1)).toBe(true);
+            expect(hash(2)).toBe("Jennifer");
+            expect(hash.contains(2)).toBe(true);
+            expect(hash(3)).toBe("Jessica");
+            expect(hash.contains(3)).toBe(true);
+            expect(hash(4)).toBe(undefined);
+            expect(hash.contains(4)).toBe(false);
+        });
+
+        it("should create a hash with a globally parameterized key and value expression",function(){
+            function idFrom(item){
+                return item.id;
+            }
+
+            function nameFrom(item){
+                return item.name;
+            }
+
+            var source = [
+                {id: 1, name: "Nick"},
+                {id: 2, name: "Jennifer"},
+                {id: 3, name: "Jessica"},
+            ];
+            var params = {idFrom:idFrom,nameFrom: nameFrom}
+
+            var hash = listy(source).toHash("idFrom($item)","nameFrom($item)",params);
+
+            expect(hash.count()).toBe(3);
+            expect(hash(1)).toBe("Nick");
+            expect(hash.contains(1)).toBe(true);
+            expect(hash(2)).toBe("Jennifer");
+            expect(hash.contains(2)).toBe(true);
+            expect(hash(3)).toBe("Jessica");
+            expect(hash.contains(3)).toBe(true);
+            expect(hash(4)).toBe(undefined);
+            expect(hash.contains(4)).toBe(false);
+        });
+
+        it("should create a hash with a locally parameterized key and value expression",function(){
+            function idFrom(item){
+                return item.id;
+            }
+
+            function nameFrom(item){
+                return item.name;
+            }
+
+            var source = [
+                {id: 1, name: "Nick"},
+                {id: 2, name: "Jennifer"},
+                {id: 3, name: "Jessica"},
+            ];
+            var params = {idFrom:idFrom,nameFrom: nameFrom}
+
+            var hash = listy(source).toHash(["idFrom($item)",params],["nameFrom($item)",params]);
+
+            expect(hash.count()).toBe(3);
+            expect(hash(1)).toBe("Nick");
+            expect(hash.contains(1)).toBe(true);
+            expect(hash(2)).toBe("Jennifer");
+            expect(hash.contains(2)).toBe(true);
+            expect(hash(3)).toBe("Jessica");
+            expect(hash.contains(3)).toBe(true);
+            expect(hash(4)).toBe(undefined);
+            expect(hash.contains(4)).toBe(false);
+        });
+    });
+
+    describe("method unique(key,params?)",function(){
+
+        it ("should filter unique values from a simple array", function(){
+            expect(listy([1,2,1,1,3,5,6]).unique()()).toEqual([1,2,3,5,6]);
+        });
+
+        it ("should filter unique values from an array of objects using a closure", function(){
+            function asLocation(item){
+                return item.location;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique(asLocation);
+
+            expect(result()).toEqual([
+                {location: "Oregon", person: "Archibald"},
+                {location: "Seattle", person: "Jake"},
+            ]);
+        });
+
+        it ("should filter unique values from an array of objects using closures for key and projection", function(){
+            function asLocation(item){
+                return item.location;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique(asLocation,asLocation);
+
+            expect(result()).toEqual(["Oregon","Seattle"]);
+        });
+
+        it ("should filter unique values from an array of objects using closures for key and projection with a limit", function(){
+            function asLocation(item){
+                return item.location;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique(asLocation,asLocation,1);
+
+            expect(result()).toEqual(["Oregon"]);
+        });
+
+        it ("should filter unique values from an array of objects using an expression", function(){
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique("location");
+
+            expect(result()).toEqual([
+                {location: "Oregon", person: "Archibald"},
+                {location: "Seattle", person: "Jake"},
+            ]);
+        });
+
+        it ("should filter unique values from an array of objects using an expression for key and projection", function(){
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique("location as location");
+
+            expect(result()).toEqual(["Oregon","Seattle"]);
+        });
+
+        it ("should filter unique values from an array of objects using an expression for key and projection with a limit", function(){
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique("location as location limit 1");
+
+            expect(result()).toEqual(["Oregon"]);
+        });
+
+        it ("should filter unique values from an array of objects using a parameterized expression", function(){
+            function locationFor(item){
+                return item.location;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).unique("locationFor($item) as locationFor($item) limit limitSize",{locationFor: locationFor, limitSize: 1});
+
+            expect(result()).toEqual(["Oregon"]);
+        });
+    });
+
+    describe("method uniqueSet(key,params?)",function(){
+
+        it ("should filter unique values from a simple array", function(){
+            expect(listy([1,2,1,1,3,5,6]).uniqueSet()()).toEqual([1,2,3,5,6]);
+        });
+
+        it ("should filter unique values from an array of objects using a closure", function(){
+            function asLocation(item){
+                return item.location;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet(asLocation);
+
+            expect(result()).toEqual(["Oregon","Seattle"]);
+        });
+
+        it ("should filter unique values from an array of objects using closures for key and projection", function(){
+            function asLocation(item){
+                return item.location;
+            }
+
+            function asItem(item){
+                return item;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet(asLocation,asItem);
+
+            expect(result()).toEqual([
+                {location: "Oregon", person: "Archibald"},
+                {location: "Seattle", person: "Jake"},
+            ]);
+        });
+
+        it ("should filter unique values from an array of objects using closures for key and projection with a limit", function(){
+            function asLocation(item){
+                return item.location;
+            }
+
+            function asItem(item){
+                return item;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet(asLocation,asItem,1);
+
+            expect(result()).toEqual([{location: "Oregon", person: "Archibald"}]);
+        });
+
+        it ("should filter unique values from an array of objects using an expression", function(){
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet("location");
+
+            expect(result()).toEqual(["Oregon","Seattle"]);
+        });
+
+        it ("should filter unique values from an array of objects using an expression for key and projection", function(){
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet("location as $item");
+
+            expect(result()).toEqual([
+                {location: "Oregon", person: "Archibald"},
+                {location: "Seattle", person: "Jake"},
+            ]);
+        });
+
+        it ("should filter unique values from an array of objects using an expression for key and projection with a limit", function(){
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet("location as $item limit 1");
+
+            expect(result()).toEqual([
+                {location: "Oregon", person: "Archibald"}
+            ]);
+        });
+
+        it ("should filter unique values from an array of objects using a parameterized expression", function(){
+            function locationFor(item){
+                return item.location;
+            }
+
+            function itemFor(item){
+                return item;
+            }
+
+            var source = [
+                {location: "Oregon", person: "Archibald"},
+                {location: "Oregon", person: "Natalie"},
+                {location: "Seattle", person: "Jake"},
+                {location: "Oregon", person: "Isabel"},
+                {location: "Seattle", person: "John"}
+            ];
+
+            var result = listy(source).uniqueSet("locationFor($item) as itemFor($item) limit limitSize",{locationFor: locationFor, itemFor: itemFor, limitSize: 1});
+
+            expect(result()).toEqual([
+                {location: "Oregon", person: "Archibald"}
+            ]);
+        });
+    });
+
+    describe("method toArray()",function(){
+        it("should return an array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source).toArray();
+
+            expect(result).toEqual([1,2,3,4,5]);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator).toArray();
+
+            expect(result).toEqual([1,2,3,4,5]);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an closure mapped array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source).toArray(String);
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an closure mapped array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator).toArray(String);
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an expression mapped array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source).toArray("'' + $item + ''");
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an expression mapped array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator).toArray("'' + $item + ''");
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return a parameterized expression mapped array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source).toArray("str($item)",{str:String});
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an expression mapped array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator).toArray("str($item)",{str:String});
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+    });
+
+    describe("implicit method ()",function(){
+        it("should return an array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source)();
+
+            expect(result).toEqual([1,2,3,4,5]);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator)();
+
+            expect(result).toEqual([1,2,3,4,5]);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an closure mapped array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source)(String);
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an closure mapped array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator)(String);
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an expression mapped array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source)("'' + $item + ''");
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an expression mapped array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator)("'' + $item + ''");
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return a parameterized expression mapped array from an array sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(source)("str($item)",{str:String});
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+        it("should return an expression mapped array from an iterator sourced listy",function(){
+            var source = [1,2,3,4,5];
+            var result = listy(listy(source).createIterator)("str($item)",{str:String});
+
+            expect(result).toEqual(['1','2','3','4','5']);
+            expect(source).not.toBe(result);
+        });
+
+    });
 });
