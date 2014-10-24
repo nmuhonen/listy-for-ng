@@ -233,4 +233,15 @@ method toHash(key,value,param?) => hash function
 --------
 produces a hash map for quick lookups based on key value pairs 
 
+method first() => var
+--------
+retrieves the first item in a listy 
+
+method last() => var
+--------
+retrieves the last item in a listy
+
+method let() => var
+--------
+sets the params in a listy to be used with all subsequent expressions
 
