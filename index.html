@@ -31,37 +31,262 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <h1>
+<a name="listy-for-ng" class="anchor" href="#listy-for-ng"><span class="octicon octicon-link"></span></a>listy-for-ng</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>An angular service for doing stuff with arrays in a chainable lazy evaluated way.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h2>
+<a name="service-listyarray--listy--listyiteratorfactory--listy" class="anchor" href="#service-listyarray--listy--listyiteratorfactory--listy"><span class="octicon octicon-link"></span></a>service listy(array | listy | listyIteratorFactory) =&gt; listy</h2>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>creates a new listy object.</p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<div class="highlight highlight-javascript"><pre><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s2">"listyMod"</span><span class="p">,[]);</span>
+<span class="nx">angular</span><span class="p">.</span><span class="nx">run</span><span class="p">([</span>
+  <span class="s2">"listy"</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">listy</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">listee</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]);</span> <span class="c1">// creates a listy from an array</span>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+    <span class="kd">var</span> <span class="nx">listee2</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">listy</span><span class="p">.</span><span class="nx">createIterator</span><span class="p">);</span> <span class="c1">// creates a listy from</span>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+    <span class="kd">var</span> <span class="nx">listee3</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">listee</span><span class="p">);</span> <span class="c1">// pass through -&gt; listee === listee3</span>
+  <span class="p">})</span>
+<span class="p">]);</span>
+</pre></div>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h2>
+<a name="method-foreachactionfnparam--listy" class="anchor" href="#method-foreachactionfnparam--listy"><span class="octicon octicon-link"></span></a>method forEach(actionFn,param?) =&gt; listy</h2>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<p>iterates through a listy.</p>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<div class="highlight highlight-javascript"><pre><span class="c1">//with a closure</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}];</span>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span><span class="nx">index</span><span class="p">,</span><span class="nx">ctx</span><span class="p">){</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">){</span>
+    <span class="k">return</span> <span class="nx">ctx</span><span class="p">.</span><span class="k">break</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nx">item</span><span class="p">.</span><span class="nx">index</span> <span class="o">=</span> <span class="nx">index</span><span class="p">;</span>
+<span class="p">});</span>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<span class="nx">expect</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">toBe</span><span class="p">({</span><span class="nx">index</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">});</span>
+
+<span class="c1">//with an expression using an optional parameter</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}];</span>
+
+<span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="s2">"$index &gt; val ? $break : (index = $index)"</span><span class="p">,{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">toBe</span><span class="p">({</span><span class="nx">index</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">});</span>
+</pre></div>
+
+<h2>
+<a name="method-count--number" class="anchor" href="#method-count--number"><span class="octicon octicon-link"></span></a>method count() =&gt; number</h2>
+
+<p>returns the number of elements in a listy.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}];</span>
+<span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">count</span><span class="p">();</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+
+<h2>
+<a name="method-filterfilteropparam--listy" class="anchor" href="#method-filterfilteropparam--listy"><span class="octicon octicon-link"></span></a>method filter(filterOp,param?) =&gt; listy</h2>
+
+<p>filters a result set from a listy.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">//with a closure</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}];</span>
+
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span><span class="nx">index</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="nx">item</span><span class="p">.</span><span class="nx">val</span> <span class="o">===</span> <span class="mi">3</span>
+<span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">([{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}]);</span>
+
+<span class="c1">//with an expression using an optional parameter</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}];</span>
+
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="s2">"$index &lt; targetIndex || val === targetVal"</span><span class="p">,{</span><span class="nx">targetIndex</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="nx">targetVal</span><span class="o">:</span><span class="mi">3</span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">([{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">3</span><span class="p">}]);</span>
+</pre></div>
+
+<h2>
+<a name="method-mapmapopparam--listy" class="anchor" href="#method-mapmapopparam--listy"><span class="octicon octicon-link"></span></a>method map(mapOp,param?) =&gt; listy</h2>
+
+<p>maps a result set from a listy.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">//with a closure</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span><span class="nx">index</span><span class="p">){</span>
+  <span class="k">return</span> <span class="p">{</span><span class="nx">val</span><span class="o">:</span><span class="nx">item</span><span class="p">,</span> <span class="nx">index</span><span class="o">:</span> <span class="nx">index</span><span class="p">};</span>
+<span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">([{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="nx">index</span><span class="o">:</span><span class="mi">0</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">,</span><span class="nx">index</span><span class="o">:</span><span class="mi">1</span><span class="p">}]);</span>
+
+<span class="c1">//with an expression using an optional parameter</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="kd">function</span> <span class="nx">getExpr</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span><span class="nx">index</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">index</span> <span class="o">+</span> <span class="s2">":"</span> <span class="o">+</span> <span class="nx">item</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="s2">"{item:$item,index:$index,expr:getExpr($item,$index)}"</span><span class="p">,{</span><span class="nx">getExpr</span><span class="o">:</span><span class="nx">getExpr</span><span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">([{</span><span class="nx">val</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="nx">index</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><span class="nx">expr</span><span class="o">:</span><span class="s2">"0:1"</span><span class="p">},{</span><span class="nx">val</span><span class="o">:</span><span class="mi">2</span><span class="p">,</span><span class="nx">index</span><span class="o">:</span><span class="mi">1</span><span class="p">,</span><span class="nx">expr</span><span class="o">:</span><span class="s2">"0:2"</span><span class="p">}]);</span>
+</pre></div>
+
+<h2>
+<a name="method-reducereduceopinitparam--var" class="anchor" href="#method-reducereduceopinitparam--var"><span class="octicon octicon-link"></span></a>method reduce(reduceOp,init?,param?) =&gt; var</h2>
+
+<p>reduces a result set from a listy.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">//with a closure</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span><span class="nx">item</span><span class="p">,</span><span class="nx">index</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">item</span><span class="p">;</span>
+<span class="p">},</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">//with an expression using an optional parameter</span>
+<span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">item1</span><span class="p">,</span><span class="nx">item2</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">item1</span> <span class="o">+</span> <span class="nx">item2</span>
+<span class="p">}</span>
+
+<span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="s2">"add($item,$result)"</span><span class="p">,</span><span class="mi">0</span><span class="p">,{</span><span class="nx">add</span><span class="o">:</span><span class="nx">add</span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</pre></div>
+
+<h2>
+<a name="method-sortsortexpression--listy" class="anchor" href="#method-sortsortexpression--listy"><span class="octicon octicon-link"></span></a>method sort(sortExpression,...) =&gt; listy</h2>
+
+<p>sorts a result set from a listy.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span><span class="nx">state</span><span class="o">:</span> <span class="s2">"CA"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Los Angeles"</span><span class="p">,</span> <span class="nx">age</span><span class="o">:</span><span class="mi">68</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">state</span><span class="o">:</span> <span class="s2">"OR"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Portland"</span><span class="p">,</span> <span class="nx">age</span><span class="o">:</span><span class="mi">57</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">state</span><span class="o">:</span> <span class="s2">"CA"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"San Francisco"</span><span class="p">,</span> <span class="nx">age</span><span class="o">:</span><span class="mi">78</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">state</span><span class="o">:</span> <span class="s2">"CA"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Los Angeles"</span><span class="p">,</span> <span class="nx">age</span><span class="o">:</span><span class="mi">31</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">state</span><span class="o">:</span> <span class="s2">"OR"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Eugene"</span><span class="p">,</span> <span class="nx">age</span><span class="o">:</span><span class="mi">57</span><span class="p">}</span>
+  <span class="p">{</span><span class="nx">state</span><span class="o">:</span> <span class="s2">"OR"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Eugene"</span><span class="p">,</span> <span class="nx">age</span><span class="o">:</span><span class="mi">56</span><span class="p">},</span> 
+<span class="p">];</span>
+
+<span class="kd">function</span> <span class="nx">compareState</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span><span class="nx">compare</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">localeCompare</span><span class="p">(</span><span class="nx">compare</span><span class="p">.</span><span class="nx">state</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">strCmp</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span><span class="nx">compare</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">localeCompare</span><span class="p">(</span><span class="nx">compare</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">//with closures</span>
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">sort</span><span class="p">(</span><span class="nx">compareState</span><span class="p">,</span><span class="s2">"desc"</span><span class="p">);</span>
+
+<span class="c1">//with expression</span>
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">sort</span><span class="p">(</span><span class="s2">"state desc"</span><span class="p">);</span>
+
+<span class="c1">//with complex expression using a custom sorter</span>
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">sort</span><span class="p">(</span><span class="s2">"state desc, city with strCmp, age"</span><span class="p">,{</span><span class="nx">strCmp</span><span class="o">:</span> <span class="nx">strCmp</span><span class="p">});</span>
+
+<span class="c1">//with all of the above</span>
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">sort</span><span class="p">([</span><span class="nx">compareState</span><span class="p">,</span><span class="s2">"desc"</span><span class="p">],[</span><span class="s2">"city with strCmp"</span><span class="p">,{</span><span class="nx">strCmp</span><span class="o">:</span> <span class="nx">strCmp</span><span class="p">}],[</span><span class="s2">"age"</span><span class="p">]);</span>
+</pre></div>
+
+<h2>
+<a name="method-groupbykeygroupitemparam--listy" class="anchor" href="#method-groupbykeygroupitemparam--listy"><span class="octicon octicon-link"></span></a>method groupBy(key,groupItem?,param?) =&gt; listy</h2>
+
+<p>groups a result set from a listy.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span><span class="nx">stateId</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="s2">"CA"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Bakersfield"</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">stateId</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="s2">"OR"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Portland"</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">stateId</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="s2">"CA"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"San Francisco"</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">stateId</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="s2">"CA"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Los Angeles"</span><span class="p">},</span> 
+  <span class="p">{</span><span class="nx">stateId</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="s2">"OR"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"Eugene"</span><span class="p">}</span>
+  <span class="p">{</span><span class="nx">stateId</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="s2">"OR"</span><span class="p">,</span> <span class="nx">city</span><span class="o">:</span> <span class="s2">"St Helens"</span><span class="p">},</span> 
+<span class="p">];</span>
+
+<span class="kd">function</span> <span class="nx">expr</span><span class="p">(</span><span class="nx">item</span><span class="p">){</span><span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">stateId</span> <span class="o">+</span> <span class="s2">":"</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">state</span><span class="p">;}</span>
+
+<span class="c1">//with an expression</span>
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">(</span><span class="s2">"stateId as expr($item)"</span><span class="p">,</span><span class="s2">"city"</span><span class="p">,{</span><span class="nx">expr</span><span class="o">:</span> <span class="nx">expr</span><span class="p">});</span>
+
+<span class="c1">//with an expression and a grouping closure</span>
+
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">listy</span><span class="p">(</span><span class="nx">source</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">([</span><span class="s2">"stateId as expr($item)"</span><span class="p">,{</span><span class="nx">expr</span><span class="o">:</span> <span class="nx">expr</span><span class="p">}],</span><span class="kd">function</span><span class="p">(</span><span class="nx">grp</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nx">grp</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="s2">"city"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">(</span><span class="s2">"{stateKey:key,cities:group()}"</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">([</span>
+  <span class="p">{</span>
+    <span class="nx">stateKey</span><span class="o">:</span> <span class="s2">"1:CA"</span><span class="p">,</span>
+    <span class="nx">cities</span><span class="o">:</span> <span class="p">[</span><span class="s2">"Bakersfield"</span><span class="p">,</span><span class="s2">"San Francisco"</span><span class="p">,</span><span class="s2">"Los Angeles"</span><span class="p">]</span>
+  <span class="p">},</span>  
+  <span class="p">{</span>
+    <span class="nx">stateKey</span><span class="o">:</span> <span class="s2">"2:OR"</span><span class="p">,</span>
+    <span class="nx">cities</span><span class="o">:</span> <span class="p">[</span><span class="s2">"Portland"</span><span class="p">,</span><span class="s2">"Eugene"</span><span class="p">,</span><span class="s2">"St Helens"</span><span class="p">]</span>
+  <span class="p">},</span>  
+<span class="p">]);</span>
+</pre></div>
+
+<h2>
+<a name="method-uniqueuniquekeyparam--listy" class="anchor" href="#method-uniqueuniquekeyparam--listy"><span class="octicon octicon-link"></span></a>method unique(uniqueKey,param?) =&gt; listy</h2>
+
+<p>filters to unique values based on key</p>
+
+<h2>
+<a name="method-uniquesetuniquekeyparam--listy" class="anchor" href="#method-uniquesetuniquekeyparam--listy"><span class="octicon octicon-link"></span></a>method uniqueSet(uniqueKey,param?) =&gt; listy</h2>
+
+<p>filters to unique values based on key, resulting in the set of keys unless otherwize specified</p>
+
+<h2>
+<a name="method-everyfilterparam--boolean" class="anchor" href="#method-everyfilterparam--boolean"><span class="octicon octicon-link"></span></a>method every(filter,param?) =&gt; boolean</h2>
+
+<p>returns true if all items match the expression or closure predicate</p>
+
+<h2>
+<a name="method-somefilterparam--boolean" class="anchor" href="#method-somefilterparam--boolean"><span class="octicon octicon-link"></span></a>method some(filter,param?) =&gt; boolean</h2>
+
+<p>returns true if some of the items match the expression or closure predicate</p>
+
+<h2>
+<a name="method-toarraymapparam--array" class="anchor" href="#method-toarraymapparam--array"><span class="octicon octicon-link"></span></a>method toArray(map?,param?) =&gt; array</h2>
+
+<p>produces an array from the listy</p>
+
+<h2>
+<a name="method-togrouparraykeygroupitemgroupmapparam--array" class="anchor" href="#method-togrouparraykeygroupitemgroupmapparam--array"><span class="octicon octicon-link"></span></a>method toGroupArray(key,groupItem,groupMap,param?) =&gt; array</h2>
+
+<p>produces an array of groups, with the children of the groups also an array</p>
+
+<h2>
+<a name="method-tohashkeyvalueparam--hash-function" class="anchor" href="#method-tohashkeyvalueparam--hash-function"><span class="octicon octicon-link"></span></a>method toHash(key,value,param?) =&gt; hash function</h2>
+
+<p>produces a hash map for quick lookups based on key value pairs </p>
+
+<h2>
+<a name="method-first--var" class="anchor" href="#method-first--var"><span class="octicon octicon-link"></span></a>method first() =&gt; var</h2>
+
+<p>retrieves the first item in a listy </p>
+
+<h2>
+<a name="method-last--var" class="anchor" href="#method-last--var"><span class="octicon octicon-link"></span></a>method last() =&gt; var</h2>
+
+<p>retrieves the last item in a listy</p>
+
+<h2>
+<a name="method-letparam--var" class="anchor" href="#method-letparam--var"><span class="octicon octicon-link"></span></a>method let(param) =&gt; var</h2>
+
+<p>sets the params in a listy to be used with all subsequent expressions</p>
       </section>
     </div>
 
