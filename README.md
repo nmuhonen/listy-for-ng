@@ -1,10 +1,9 @@
-listy-for-ng
+listy for angularjs
 ============
 
 An angular service for doing stuff with arrays in a chainable lazy evaluated way.
 
-service listy(array | listy | listyIteratorFactory) => listy
---------
+###service listy(array | listy | listyIteratorFactory) => listy
 creates a new listy object.
 
 ```javascript
@@ -21,8 +20,7 @@ angular.run([
 ]);
 ```
 
-method forEach(actionFn,param?) => listy
---------
+###method forEach(actionFn,param?) => listy
 iterates through a listy.
 
 ```javascript
@@ -46,8 +44,7 @@ listy(source).forEach("$index > val ? $break : (index = $index)",{val:1});
 expect(source).toBe({index:0,val:1},{val:2},{val:3});
 ```
 
-method count() => number
---------
+###method count() => number
 returns the number of elements in a listy.
 
 ```javascript
@@ -57,8 +54,7 @@ var count = listy(source).count();
 expect(length).toBe(3);
 ```
 
-method filter(filterOp,param?) => listy
---------
+###method filter(filterOp,param?) => listy
 filters a result set from a listy.
 
 ```javascript
@@ -80,8 +76,7 @@ var result = listy(source).filter("$index < targetIndex || val === targetVal",{t
 expect(result()).toEqual([{val:1},{val:3}]);
 ```
 
-method map(mapOp,param?) => listy
---------
+###method map(mapOp,param?) => listy
 maps a result set from a listy.
 
 ```javascript
@@ -106,8 +101,7 @@ var result = listy(source).map("{item:$item,index:$index,expr:getExpr($item,$ind
 expect(result()).toEqual([{val:1,index:0,expr:"0:1"},{val:2,index:1,expr:"0:2"}]);
 ```
 
-method reduce(reduceOp,init?,param?) => var
---------
+###method reduce(reduceOp,init?,param?) => var
 reduces a result set from a listy.
 
 ```javascript
@@ -133,8 +127,7 @@ listy(source).map("add($item,$result)",0,{add:add});
 expect(source).toEqual(3);
 ```
 
-method sort(sortExpression,...) => listy
---------
+###method sort(sortExpression,...) => listy
 sorts a result set from a listy.
 
 ```javascript
@@ -205,43 +198,33 @@ expect(result("{stateKey:key,cities:group()}")).toEqual([
 ]);
 ```
 
-method unique(uniqueKey,param?) => listy
---------
+###method unique(uniqueKey,param?) => listy
 filters to unique values based on key
 
-method uniqueSet(uniqueKey,param?) => listy
---------
+###method uniqueSet(uniqueKey,param?) => listy
 filters to unique values based on key, resulting in the set of keys unless otherwize specified
 
-method every(filter,param?) => boolean
---------
+###method every(filter,param?) => boolean
 returns true if all items match the expression or closure predicate
 
-method some(filter,param?) => boolean
---------
+###method some(filter,param?) => boolean
 returns true if some of the items match the expression or closure predicate
 
-method toArray(map?,param?) => array
---------
+###method toArray(map?,param?) => array
 produces an array from the listy
 
-method toGroupArray(key,groupItem,groupMap,param?) => array
---------
+###method toGroupArray(key,groupItem,groupMap,param?) => array
 produces an array of groups, with the children of the groups also an array
 
-method toHash(key,value,param?) => hash function
---------
+###method toHash(key,value,param?) => hash function
 produces a hash map for quick lookups based on key value pairs 
 
-method first() => var
---------
+###method first() => var
 retrieves the first item in a listy 
 
-method last() => var
---------
+###method last() => var
 retrieves the last item in a listy
 
-method let(param) => var
---------
+###method let(param) => var
 sets the params in a listy to be used with all subsequent expressions
 
